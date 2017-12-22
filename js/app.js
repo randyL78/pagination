@@ -9,12 +9,21 @@ const perPage = 10; // set number of students per page
 let currentPage = 1; // default the start page to one on load
 
 // DOM elements
+const header = document.querySelector(".page-header");
+header.innerHTML = `
+    <h2>Students</h2>
+    <div class="student-search">
+        <input placeholder="Search for students...">
+        <button>Search</button>
+    </div>`;
+const searchBar = header.querySelector("input");
+const searchButton = header.querySelector("button");
 const pageElement = document.querySelector(".page");
 const paginationElement = document.createElement("div");
 paginationElement.className = "pagination";
 pageElement.appendChild(paginationElement);
-
-
+const students = document.querySelectorAll(".student-item");
+let subStudents = students;
 
 // ***********************************
 // Functions
@@ -24,23 +33,29 @@ pageElement.appendChild(paginationElement);
  * Choose which students to display on the current page
  */
 function showStudents() {
-    const students = document.querySelectorAll(".student-item");
     // Determine final student to be displayed on page
     const endVal = currentPage * perPage;
     const startVal = endVal - perPage;
-
-    // Loop through students array 
-    for (let i = 0; i < students.length; i++ ) {
-        if (i >= startVal && i < endVal) {
-            // remove the hide class to show the student
-            students[i].classList.remove("hide");
-        } else {
-            // hide the student
-            students[i].classList.add("hide");            
-        }
+    
+    // Hide all the students initially
+    hideStudents();
+    
+    // Loop through array of students that pertain to current page 
+    for (let i = startVal; i < endVal && i < subStudents.length; i++ ) {
+        // remove the hide class to show the student
+        subStudents[i].classList.remove("hide");
     }
-    showButtons(students.length + 1);
+    showButtons(subStudents.length + 1);
 } 
+
+/**
+ * Hide all of the students
+ */
+function hideStudents() {
+    students.forEach( student => {
+        student.classList.add("hide");
+    });
+}
 
 /**
  * Add page number navigation buttons
@@ -53,11 +68,16 @@ function showButtons(numberOfStudents) {
     if (numberOfStudents % perPage) {
         pageCount += 1;
     }
-
     // Create string representation of html
     let numberLinks = "<ul>";
-    for(let i = 1; i <= pageCount; i++) {
-        numberLinks += createLink(i);
+    if (pageCount > 1) {
+        for(let i = 1; i <= pageCount; i++) {
+            numberLinks += createLink(i);
+        }
+    }
+    // if the array of students to display is empty, display a message
+    if (subStudents.length === 0) {
+        numberLinks += "<h3>We're sorry, there are no students with that name</h3>"
     }
     numberLinks += "</ul>";
     paginationElement.innerHTML = numberLinks;
@@ -80,23 +100,38 @@ function createLink(number) {
     return li;
 }
 
-
+/**
+ * Create a sub array of students based on search bar value
+ * @param {string} value - the value to search the array by
+ */
+function searchStudents(value) {
+    subStudents = [];
+    for (let i = 0; i < students.length; i++) {
+        const name = students[i].querySelector("h3").innerText.toLowerCase();
+        if (name.includes(value.toLowerCase() ) ) {
+            subStudents.push(students[i] );
+        }
+    }
+}
 
 // ***********************************
 // Event listeners
 // ***********************************
-paginationElement.onclick = (e) => {
+paginationElement.onclick = e => {
     if (e.target.tagName === "A") {
         currentPage = parseInt(e.target.textContent);
         showStudents();
     }
 }
 
+searchButton.onclick = e => {
+    currentPage = 1;
+    searchStudents(searchBar.value)
+    showStudents();
+}
+
 
 // ***********************************
-// Main entry
+// Initial Tasks
 // ***********************************
-
 showStudents();
-
-
