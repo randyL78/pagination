@@ -45,7 +45,7 @@ function showStudents() {
         // remove the hide class to show the student
         subStudents[i].classList.remove("hide");
     }
-    showButtons(subStudents.length + 1);
+    showButtons(subStudents.length);
 } 
 
 /**
@@ -63,7 +63,7 @@ function hideStudents() {
  */
 function showButtons(numberOfStudents) {
     let pageCount = Math.floor(numberOfStudents / perPage);
-
+ 
     // if number of students is not a multiple of 'perPage' add 1 additional page for remainder
     if (numberOfStudents % perPage) {
         pageCount += 1;
@@ -105,6 +105,7 @@ function createLink(number) {
  * @param {string} value - the value to search the array by
  */
 function searchStudents(value) {
+    currentPage = 1;
     subStudents = [];
     for (let i = 0; i < students.length; i++) {
         const name = students[i].querySelector("h3").innerText.toLowerCase();
@@ -112,11 +113,13 @@ function searchStudents(value) {
             subStudents.push(students[i] );
         }
     }
+    showStudents();
 }
 
 // ***********************************
 // Event listeners
 // ***********************************
+// Pagination events
 paginationElement.onclick = e => {
     if (e.target.tagName === "A") {
         currentPage = parseInt(e.target.textContent);
@@ -124,11 +127,9 @@ paginationElement.onclick = e => {
     }
 }
 
-searchButton.onclick = e => {
-    currentPage = 1;
-    searchStudents(searchBar.value)
-    showStudents();
-}
+// Search events
+searchBar.onkeyup = e => searchStudents(searchBar.value);
+searchButton.onclick = e => searchStudents(searchBar.value);
 
 
 // ***********************************
