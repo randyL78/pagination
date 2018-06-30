@@ -94,9 +94,9 @@ function createLink(number) {
     if (number === currentPage) {
         active = "class='active'";
     }
-    let li = "<li>" + 
-                "<a href='#'" + active + ">" + number + "</a>" +
-             "</li>";
+    let li = `<li>  
+                <a href='#'${active}>${number}</a>
+             </li>`;
     return li;
 }
 
