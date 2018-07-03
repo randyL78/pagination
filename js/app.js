@@ -109,7 +109,8 @@ function searchStudents(value) {
     subStudents = [];
     for (let i = 0; i < students.length; i++) {
         const name = students[i].querySelector("h3").innerText.toLowerCase();
-        if (name.includes(value.toLowerCase() ) ) {
+        const email = students[i].querySelector(".email").innerText.toLowerCase();
+        if (name.includes(value.toLowerCase()) || email.includes(value.toLowerCase()) ) {
             subStudents.push(students[i] );
         }
     }
